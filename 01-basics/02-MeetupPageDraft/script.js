@@ -44,23 +44,52 @@ const agendaItemIcons = {
   other: 'cal-sm',
 };
 
+const getDateOnlyString = (date) => {
+  const YYYY = date.getUTCFullYear();
+  const MM = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+  const DD = date.getUTCDate().toString().padStart(2, '0');
+  return `${YYYY}-${MM}-${DD}`;
+};
+
+const fetchMeetup = (meetupId) =>
+  fetch(`${API_URL}/meetups/${meetupId}`).then((res) => res.json());
+
 export const app = new Vue({
   el: '#app',
 
-  data: {
-    //
+  data() {
+    return {
+      rawMeetup: {}
+    }
   },
 
-  mounted() {
-    // Требуется получить данные митапа с API
+  async mounted() {
+    this.rawMeetup = await fetchMeetup(MEETUP_ID)
   },
 
   computed: {
-    //
+    meetup () {
+      return {
+        ...this.rawMeetup,
+        coverStyle: { '--bg-url': `url('${getMeetupCoverLink(this.rawMeetup)}')` },
+        dateOnlyString: getDateOnlyString(new Date(this.rawMeetup.date)),
+        localDate: new Date(this.rawMeetup.date).toLocaleString(navigator.language, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })
+      }
+    },
+    meetupAgenda() {
+      return this.rawMeetup.agenda.map((agenda) => ({
+        ...agenda,
+        icon: `/assets/icons/icon-${agendaItemIcons[agenda.type]}.svg`,
+        title: agenda.title || agendaItemTitles[agenda.type],
+        timeline: `${agenda.startsAt} - ${agenda.endsAt}`
+      }));
+    }
   },
 
   methods: {
-    // Получение данных с API предпочтительнее оформить отдельным методом,
-    // а не писать прямо в mounted()
-  },
+  }
 });
