@@ -32,7 +32,7 @@
                 </div>
                 <div class="meetup-agenda__item-col">{{ agenda.timeline }}</div>
                 <div class="meetup-agenda__item-col">
-                  <h5 v-html="agenda.title" class="meetup-agenda__title"></h5>
+                  <h5 class="meetup-agenda__title">{{ agenda.title }}</h5>
                   <template v-if="agenda.type === 'talk'">
                     <p><span>{{ agenda.speaker }}</span><span class="meetup-agenda__dot"></span><span class="meetup-agenda__lang">{{ agenda.language }}</span></p>
                     <p>{{ agenda.description }}</p>
