@@ -44,9 +44,6 @@ export const MeetupView = {
     coverLink() {
       return getMeetupCoverLink(this.meetup)
     },
-    // coverStyle() {
-    //   return this.meetup.imageId ? { '--bg-url': `url('${getMeetupCoverLink(this.meetup)}')` } : {}
-    // },
     formattedDate() {
       return new Date(this.meetup.date)
     }

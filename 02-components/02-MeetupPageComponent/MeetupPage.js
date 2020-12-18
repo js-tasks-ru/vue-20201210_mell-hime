@@ -19,7 +19,5 @@ export const MeetupPage = {
 
   async mounted() {
     this.rawMeetup = await fetchMeetup(MEETUP_ID);
-  },
-
-  // methods
+  }
 };
