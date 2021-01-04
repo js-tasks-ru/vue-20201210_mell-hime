@@ -33,7 +33,11 @@ function datesInMonth(date) {
   let lastDaysInPreviousMonth = firstDay > 0 ? daysInPreviousMonth.slice(-firstDay) : (firstDay !== -1 ? [] : daysInPreviousMonth.slice(-6));
   let firstDaysInNextMonth = lastDay > 0 ? daysInNextMonth.slice(0, 7 - lastDay) : [];
 
-  return [...lastDaysInPreviousMonth, ...daysInCurrentMonth, ...firstDaysInNextMonth];
+  return [
+    ...lastDaysInPreviousMonth,
+    ...daysInCurrentMonth,
+    ...firstDaysInNextMonth,
+  ];
 }
 
 export const MeetupsCalendar = {
@@ -52,11 +56,11 @@ export const MeetupsCalendar = {
         <template v-for="monthDate in datesList">
           <div
             class="rangepicker__cell"
-            :class="{ 'rangepicker__cell_inactive': monthDate.getMonth() !== currentMonth }"
+            :class="{ 'rangepicker__cell_inactive': inactiveCell(monthDate) }"
           >
             {{ monthDate.getDate() }}
-            <template v-for="meetup in meetupsFormatted">
-              <a v-if="meetup.formattedDate === monthDate.setHours(0, 0, 0, 0)" class="rangepicker__event">{{ meetup.title }}</a>
+            <template v-for="meetup in meetupsOfDay[dateWoTime(monthDate)]">
+              <a class="rangepicker__event">{{ meetup.title }}</a>
             </template>
           </div>
         </template>
@@ -68,7 +72,7 @@ export const MeetupsCalendar = {
     meetups: {
       required: true,
       type: Array,
-    }
+    },
   },
 
   data() {
@@ -82,7 +86,7 @@ export const MeetupsCalendar = {
       return this.date.toLocaleDateString(navigator.language, {
         year: 'numeric',
         month: 'long',
-      })
+      });
     },
 
     datesList() {
@@ -93,11 +97,18 @@ export const MeetupsCalendar = {
       return this.date.getMonth();
     },
 
-    meetupsFormatted() {
-      return this.meetups.map((meetup) => ({
-        ...meetup,
-        formattedDate: new Date(meetup.date).setHours(0, 0, 0, 0),
-      }));
+    meetupsOfDay() {
+      let meetupsData = {};
+      this.meetups.forEach((meetup) => {
+        let meetupDate = new Date(meetup.date).setHours(0, 0, 0, 0);
+        if (meetupsData[meetupDate]) {
+          meetupsData[meetupDate].push(meetup);
+        } else {
+          meetupsData[meetupDate] = [].concat(meetup);
+        }
+      });
+
+      return meetupsData;
     },
   },
 
@@ -107,6 +118,12 @@ export const MeetupsCalendar = {
     },
     previousMonth() {
       this.date = previousMonth(this.date);
+    },
+    inactiveCell(monthDate) {
+      return monthDate.getMonth() !== this.currentMonth;
+    },
+    dateWoTime(monthDate) {
+      return new Date(monthDate).setHours(0, 0, 0, 0)
     },
   },
 };
