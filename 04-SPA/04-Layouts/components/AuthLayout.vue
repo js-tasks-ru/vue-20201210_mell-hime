@@ -2,6 +2,7 @@
   <div class="page page_onboarding">
     <div class="container">
       <h1 class="page__title text-center">{{ title }}</h1>
+      <router-view />
     </div>
   </div>
 </template>

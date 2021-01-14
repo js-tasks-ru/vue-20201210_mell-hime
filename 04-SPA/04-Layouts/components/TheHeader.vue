@@ -10,15 +10,9 @@
       </h1>
     </div>
     <nav>
-      <router-link v-if="$route.name !== 'login'" :to="{ name: 'login' }"
-        >Вход</router-link
-      >
-      <router-link v-if="$route.name !== 'meetups'" :to="{ name: 'meetups' }"
-        >Митапы</router-link
-      >
-      <router-link v-if="$route.name !== 'form'" :to="{ name: 'form' }"
-        >Создать митап</router-link
-      >
+      <router-link :to="{ name: 'login' }">Вход</router-link>
+      <router-link :to="{ name: 'meetups' }">Митапы</router-link>
+      <router-link :to="{ name: 'form' }">Создать митап</router-link>
     </nav>
   </header>
 </template>
