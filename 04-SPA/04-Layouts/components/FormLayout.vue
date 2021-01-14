@@ -2,7 +2,7 @@
   <div class="page page_meetup-forms">
     <div class="container">
       <h2 class="page__title">{{ title }}</h2>
-      <router-view />
+      <slot />
     </div>
   </div>
 </template>
