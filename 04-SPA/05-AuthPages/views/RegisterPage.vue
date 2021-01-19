@@ -57,9 +57,7 @@ export default {
 
   data() {
     return {
-      user: {
-        type: Object,
-      },
+      user: {},
       error_message: null,
     };
   },
