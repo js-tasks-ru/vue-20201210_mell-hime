@@ -57,7 +57,13 @@ export default {
 
   data() {
     return {
-      user: {},
+      user: {
+        password: '',
+        email: '',
+        fullName: '',
+        passwordConfirmation: '',
+        agreement: false,
+      },
       error_message: null,
     };
   },

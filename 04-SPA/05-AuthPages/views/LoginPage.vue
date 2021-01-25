@@ -46,7 +46,10 @@ export default {
 
   data() {
     return {
-      user: {},
+      user: {
+        email: '',
+        password: '',
+      },
       error_message: null,
     };
   },
