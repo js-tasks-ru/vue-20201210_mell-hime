@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <meetups-view v-bind.sync="$data" />
+    <meetups-view v-bind.sync="pageAttrs" />
   </div>
 </template>
 
@@ -13,33 +13,57 @@ export default {
 
   data() {
     return {
-      search: this.$route.query.search,
-      date: this.$route.query.date,
-      participation: this.$route.query.participation,
-      view: this.$route.query.view,
+      pageAttrs: {
+        search: this.$route.query.search,
+        date: this.$route.query.date,
+        participation: this.$route.query.participation,
+        view: this.$route.query.view,
+      },
     };
   },
 
   computed: {
     updatedQuery: {
       get: function () {
-        return this.search;
+        return null;
       },
       set: function (query) {
-        this.search = query.search;
-        this.date = query.date;
-        this.participation = query.participation;
-        this.view = query.view;
+        this.pageAttrs.search = query.search;
+        this.pageAttrs.date = query.date;
+        this.pageAttrs.participation = query.participation;
+        this.pageAttrs.view = query.view;
       },
     },
   },
 
   watch: {
-    $route(to, from) {
+    $route(to) {
       this.updatedQuery = to.query;
     },
-    search: function (oldValue, newValue) {
-      this.$router.replace({ path: '/', query: { search: newValue } });
+    pageAttrs: {
+      deep: true,
+      handler() {
+        let newDate = this.pageAttrs.date === 'all' ? undefined : this.pageAttrs.date
+        let newSearch = this.pageAttrs.search === '' ? undefined : this.pageAttrs.search
+        let newView = this.pageAttrs.view === 'list' ? undefined : this.pageAttrs.view
+        let newParticipation = this.pageAttrs.participation === 'all' ? undefined : this.pageAttrs.participation
+        this.$router
+          .replace({
+            query: {
+              date: newDate,
+              search: newSearch,
+              view: newView,
+              participation: newParticipation,
+            },
+          })
+          .catch((error) => {
+            if (error.name === 'NavigationDuplicated') {
+              return this.currentRoute;
+            } else {
+              throw error;
+            }
+          });
+      },
     },
   },
 };
