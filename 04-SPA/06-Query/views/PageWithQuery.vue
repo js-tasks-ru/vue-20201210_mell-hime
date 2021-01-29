@@ -22,23 +22,13 @@ export default {
     };
   },
 
-  computed: {
-    updatedQuery: {
-      get: function () {
-        return null;
-      },
-      set: function (query) {
-        this.pageAttrs.search = query.search;
-        this.pageAttrs.date = query.date;
-        this.pageAttrs.participation = query.participation;
-        this.pageAttrs.view = query.view;
-      },
-    },
-  },
-
   watch: {
     $route(to) {
-      this.updatedQuery = to.query;
+      let query = to.query;
+      this.pageAttrs.search = query.search === undefined ? '' : query.search;
+      this.pageAttrs.date = query.date === undefined ? 'all' : query.date;
+      this.pageAttrs.participation = query.participation === undefined ? 'all' : query.participation;
+      this.pageAttrs.view = query.view === undefined ? 'list' : query.view;
     },
     pageAttrs: {
       deep: true,
