@@ -2,8 +2,8 @@
   <app-input
     :type="type"
     :value="newValue"
-    @input="$emit('update:valueAsNumber', convertedTime($event))"
-    @change="$emit('update:valueAsDate', convertedDate($event.target.valueAsNumber))"
+    @input.native="$emit('update:valueAsNumber', convertToNumber($event.target.valueAsNumber))"
+    @change="$emit('update:valueAsDate', convertToDate($event.target.valueAsNumber))"
   >
     <!-- Так можно передать все слоты в дочерний компонент -->
     <template v-for="slot of Object.keys($slots)" v-slot:[slot]>
@@ -19,9 +19,9 @@ function getDate(date) {
   return date.toISOString().split('T')[0];
 }
 
-function getTime(date) {
+function getTime(date, step) {
   let timeFormatted = date.toISOString().split('.')[0].split('T')[1];
-  return date.getSeconds() === 0 ? timeFormatted.slice(0, -3) : timeFormatted;
+  return step % 60 > 0 ? timeFormatted : timeFormatted.slice(0, -3)
 }
 
 function getDatetimeLocal(date) {
@@ -60,7 +60,7 @@ export default {
 
         switch (this.type) {
           case 'time':
-            return getTime(date);
+            return getTime(date, this.$attrs.step);
           case 'datetime-local':
             return getDatetimeLocal(date);
           default:
@@ -71,12 +71,16 @@ export default {
   },
 
   methods: {
-    convertedTime(date) {
-      return new Date(date).getTime();
+    convertToNumber(date) {
+      if (this.type === 'date') {
+        return new Date(new Date(date).toUTCString()).getTime();
+      } else if (this.type === 'datetime-local') {
+        return date;
+      }
     },
 
-    convertedDate(date) {
-      return new Date(date).toISOString();
+    convertToDate(date) {
+      return new Date(new Date(date).toISOString());
     },
   },
 };
