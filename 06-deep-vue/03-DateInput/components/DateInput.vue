@@ -1,10 +1,5 @@
 <template>
-  <app-input
-    :type="type"
-    :value="newValue"
-    @input.native="$emit('update:valueAsNumber', convertToNumber($event.target.valueAsNumber))"
-    @change="$emit('update:valueAsDate', convertToDate($event.target.valueAsNumber))"
-  >
+  <app-input :type="type" :value="newValue" @input.native="updateDate($event)">
     <!-- Так можно передать все слоты в дочерний компонент -->
     <template v-for="slot of Object.keys($slots)" v-slot:[slot]>
       <slot :name="slot" />
@@ -13,10 +8,8 @@
 </template>
 
 <script>
-import AppInput from './AppInput';
-
 function getDate(date) {
-  return date.toISOString().split('T')[0];
+  return date.toISOString().split('T')[0]
 }
 
 function getTime(date, step) {
@@ -27,6 +20,8 @@ function getTime(date, step) {
 function getDatetimeLocal(date) {
   return date.toISOString().split('.')[0];
 }
+
+import AppInput from './AppInput';
 
 export default {
   name: 'DateInput',
@@ -71,16 +66,10 @@ export default {
   },
 
   methods: {
-    convertToNumber(date) {
-      if (this.type === 'date') {
-        return new Date(new Date(date).toUTCString()).getTime();
-      } else if (this.type === 'datetime-local') {
-        return date;
-      }
-    },
-
-    convertToDate(date) {
-      return new Date(new Date(date).toISOString());
+    updateDate(event) {
+      let dateValue = this.type !== 'datetime-local' ? event.target.valueAsDate : new Date(event.target.valueAsNumber)
+      this.$emit('update:valueAsNumber', event.target.valueAsNumber);
+      this.$emit('update:valueAsDate', dateValue);
     },
   },
 };
