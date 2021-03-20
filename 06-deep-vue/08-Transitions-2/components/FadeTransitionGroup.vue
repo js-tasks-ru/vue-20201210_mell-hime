@@ -35,7 +35,9 @@ export default {
     return createElement(
       'transition-group',
       {
-        attrs: { ...this.$attrs, name: 'fade-list' },
+        class: 'fade-list',
+        props: { name: 'fade-list' },
+        attrs: this.$attrs,
       },
       newSlots,
     );
