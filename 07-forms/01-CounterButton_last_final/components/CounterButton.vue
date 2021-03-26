@@ -23,7 +23,7 @@ export default {
 
   model: {
     prop: 'count',
-    event: 'click',
+    event: 'increment',
   },
 
   watch: {
