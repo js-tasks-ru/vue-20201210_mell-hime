@@ -1,5 +1,5 @@
 <template>
-  <button @click="$emit('increment', (count += 1))">
+  <button @click="$emit('increment', (incrementedCount += 1))">
     {{ incrementedCount }}
   </button>
 </template>
