@@ -33,8 +33,8 @@
         v-for="(agendaItem, idx) in localMeetup.agenda"
         :key="agendaItem.id"
         @remove="removeAgendaItem(idx)"
-        v-bind:agendaItem="agendaItem"
-        v-on:update:agendaItem="localMeetup.agenda[idx] = $event"
+        :agendaItem="agendaItem"
+        @update:agendaItem="localMeetup.agenda.splice(idx, 1, $event)"
         class="mb-3"
       />
 
