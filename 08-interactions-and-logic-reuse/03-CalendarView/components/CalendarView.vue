@@ -3,31 +3,118 @@
     <div class="rangepicker__calendar">
       <div class="rangepicker__month-indicator">
         <div class="rangepicker__selector-controls">
-          <button class="rangepicker__selector-control-left"></button>
-          <div>Январь 2021</div>
-          <button class="rangepicker__selector-control-right"></button>
+          <button @click="previousMonth" class="rangepicker__selector-control-left"></button>
+          <div>{{ currentDate }}</div>
+          <button @click="nextMonth" class="rangepicker__selector-control-right"></button>
         </div>
       </div>
       <div class="rangepicker__date-grid">
-        <div class="rangepicker__cell rangepicker__cell_inactive">28</div>
-        <div class="rangepicker__cell rangepicker__cell_inactive">29</div>
-        <div class="rangepicker__cell rangepicker__cell_inactive">30</div>
-        <div class="rangepicker__cell rangepicker__cell_inactive">31</div>
-        <div class="rangepicker__cell">
-          1
-          <a class="rangepicker__event">Митап</a>
-          <a class="rangepicker__event">Митап</a>
-        </div>
-        <div class="rangepicker__cell">2</div>
-        <div class="rangepicker__cell">3</div>
+        <template v-for="monthDate in datesList">
+          <div
+            class="rangepicker__cell"
+            :class="{ rangepicker__cell_inactive: inactiveCell(monthDate) }"
+          >
+            {{ monthDate.getDate() }}
+            <slot :monthDate="monthDate"></slot>
+          </div>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+function getDaysInMonth(month, year) {
+  let date = new Date(year, month, 1);
+  let days = [];
+  while (date.getMonth() === month) {
+    days.push(new Date(date));
+    date.setDate(date.getDate() + 1);
+  }
+  return days;
+}
+
+function nextMonth(date) {
+  if (date.getMonth() === 11) {
+    return new Date(date.getFullYear() + 1, 0, 1);
+  } else {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 1);
+  }
+}
+
+function previousMonth(date) {
+  if (date.getMonth() === 0) {
+    return new Date(date.getFullYear() - 1, 11, 1);
+  } else {
+    return new Date(date.getFullYear(), date.getMonth() - 1, 1);
+  }
+}
+
+function datesInMonth(date) {
+  let firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay() - 1;
+  let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDay();
+  let daysInPreviousMonth = getDaysInMonth(
+    previousMonth(date).getMonth(),
+    date.getFullYear(),
+  );
+  let daysInNextMonth = getDaysInMonth(
+    nextMonth(date).getMonth(),
+    date.getFullYear(),
+  );
+  let daysInCurrentMonth = getDaysInMonth(date.getMonth(), date.getFullYear());
+  let lastDaysInPreviousMonth =
+    firstDay > 0
+      ? daysInPreviousMonth.slice(-firstDay)
+      : firstDay !== -1
+      ? []
+      : daysInPreviousMonth.slice(-6);
+  let firstDaysInNextMonth =
+    lastDay > 0 ? daysInNextMonth.slice(0, 7 - lastDay) : [];
+
+  return [
+    ...lastDaysInPreviousMonth,
+    ...daysInCurrentMonth,
+    ...firstDaysInNextMonth,
+  ];
+}
+
 export default {
   name: 'CalendarView',
+
+  data() {
+    return {
+      date: new Date(),
+    };
+  },
+
+  computed: {
+    currentDate() {
+      return this.date.toLocaleDateString(navigator.language, {
+        year: 'numeric',
+        month: 'long',
+      });
+    },
+
+    datesList() {
+      return datesInMonth(new Date(this.date));
+    },
+
+    currentMonth() {
+      return this.date.getMonth();
+    },
+  },
+
+  methods: {
+    nextMonth() {
+      this.date = nextMonth(this.date);
+    },
+    previousMonth() {
+      this.date = previousMonth(this.date);
+    },
+    inactiveCell(monthDate) {
+      return monthDate.getMonth() !== this.currentMonth;
+    },
+  },
 };
 </script>
 
