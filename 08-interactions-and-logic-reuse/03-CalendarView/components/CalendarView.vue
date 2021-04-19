@@ -12,14 +12,10 @@
         <template v-for="monthDate in datesList">
           <div
             class="rangepicker__cell"
-            :class="{ 'rangepicker__cell_inactive': inactiveCell(monthDate) }"
+            :class="{ rangepicker__cell_inactive: inactiveCell(monthDate) }"
           >
             {{ monthDate.getDate() }}
-            <template v-for="meetup in meetupsOfDay[dateWoTime(monthDate)]">
-              <slot :meetup="meetup">
-                <span>{{ meetup }}</span>
-              </slot>
-            </template>
+            <slot :monthDate="monthDate"></slot>
           </div>
         </template>
       </div>
@@ -85,12 +81,6 @@ function datesInMonth(date) {
 export default {
   name: 'CalendarView',
 
-  props: {
-    meetups: {
-      type: Array,
-    },
-  },
-
   data() {
     return {
       date: new Date(),
@@ -112,21 +102,6 @@ export default {
     currentMonth() {
       return this.date.getMonth();
     },
-
-    meetupsOfDay() {
-      let meetupsData = {};
-      if (this.meetups) {
-        this.meetups.forEach((meetup) => {
-          let meetupDate = new Date(meetup.date).setHours(0, 0, 0, 0);
-          if (meetupsData[meetupDate]) {
-            meetupsData[meetupDate].push(meetup);
-          } else {
-            meetupsData[meetupDate] = [].concat(meetup);
-          }
-        });
-      }
-      return meetupsData;
-    },
   },
 
   methods: {
@@ -138,9 +113,6 @@ export default {
     },
     inactiveCell(monthDate) {
       return monthDate.getMonth() !== this.currentMonth;
-    },
-    dateWoTime(monthDate) {
-      return new Date(monthDate).setHours(0, 0, 0, 0);
     },
   },
 };
