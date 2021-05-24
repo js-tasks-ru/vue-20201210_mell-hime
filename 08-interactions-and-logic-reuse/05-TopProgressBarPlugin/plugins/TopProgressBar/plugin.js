@@ -13,16 +13,18 @@ export default {
     TopProgressBar.setInstance(TopProgressBarInstance);
 
     if (router) {
-      router.beforeEach(() => {
+      router.beforeEach((to, from, next) => {
         TopProgressBar.start();
+        next();
       });
 
       router.afterEach(() => {
         TopProgressBar.finish();
       });
 
-      router.onError(() => {
+      router.onError((err) => {
         TopProgressBar.fail();
+        throw err;
       });
     }
 
