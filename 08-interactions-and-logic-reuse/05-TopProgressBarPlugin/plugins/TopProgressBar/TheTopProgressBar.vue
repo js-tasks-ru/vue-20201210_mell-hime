@@ -24,6 +24,7 @@ export default {
       if (this.state === 'started') return;
 
       this.state = 'started';
+      this.failLine = false;
       this.showLine = true;
       this.drawLine();
     },
@@ -44,14 +45,13 @@ export default {
 
     drawLine() {
       this.animate({
-        duration: 5000,
-        timing(timeFraction) {
+        duration: 3000,
+        timing: (timeFraction) => {
           if (this.state === 'failed' || this.state === 'finished') return 1;
 
           return timeFraction;
         },
-        draw(progress) {
-          console.log(this);
+        draw: (progress) => {
           this.width = progress * 100 + '%';
 
           if (progress === 1) {
